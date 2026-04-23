@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tombolone — Display</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="js/smorfia.js"></script>
+  <script defer src="js/store.js"></script>
+  <script defer src="js/display.js"></script>
+  <script defer src="js/alpine.min.js"></script>
+</head>
+<body class="solo-display" x-data="displayView">
+  <div class="strip" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  <!-- Waiting state -->
+  <div class="display-waiting" x-show="!$store.tombola.setup.completed" x-cloak>
+    <h1>Tombolone</h1>
+    <p>In attesa che il banditore inizi la partita…</p>
+  </div>
+
+  <!-- Cerimonia di estrazione: numero gigante al centro che poi si sposta a sinistra -->
+  <div class="ceremony" x-show="ceremonyActive" aria-hidden="true" x-cloak>
+    <div class="ceremony-num" x-text="ceremonyNum"></div>
+  </div>
+
+  <main class="display-layout" x-show="$store.tombola.setup.completed" x-cloak>
+    <!-- Colonna sinistra: numero chiamato + storico -->
+    <section class="display-sinistra">
+      <div class="reveal" :class="{animate: animateReveal}" aria-live="polite">
+        <div class="placeholder" x-show="!$store.tombola.ultimo">In attesa della prima estrazione…</div>
+        <div class="numero" x-show="$store.tombola.ultimo" x-text="$store.tombola.ultimo"></div>
+        <div class="decina" x-show="$store.tombola.ultimo" x-text="$store.tombola.decinaLabel($store.tombola.ultimo)"></div>
+        <div class="smorfia"
+             x-show="$store.tombola.ultimo && $store.tombola.setup.smorfia"
+             x-text="$store.tombola.smorfia[$store.tombola.ultimo] ?? ''"></div>
+      </div>
+
+      <div class="display-precedenti" x-show="$store.tombola.estratti.length > 1">
+        <div class="precedenti-titolo">Chiamati prima</div>
+        <ol class="precedenti-lista">
+          <template x-for="n in $store.tombola.estratti.slice(0, -1).slice(-10).reverse()" :key="n">
+            <li x-text="n"></li>
+          </template>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Colonna destra: tabellone -->
+    <section class="display-tabellone">
+      <div class="tabellone">
+        <template x-for="(righe, bi) in $store.tombola.tabelloneBlocchi" :key="bi">
+          <div class="tabellone-blocco">
+            <template x-for="(riga, ri) in righe" :key="ri">
+              <div class="tabellone-riga">
+                <template x-for="(n, ci) in riga" :key="ci">
+                  <div class="pallina"
+                       :class="{
+                         separatore: n === null,
+                         estratta: n !== null && $store.tombola.estratti.includes(n),
+                         'appena-estratta': n !== null && $store.tombola.ultimo === n
+                       }"
+                       x-text="n ?? ''"></div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
+    </section>
+
+    <!-- Barra vincitori (sotto, larga, scorrevole) -->
+    <aside class="display-vincitori" x-show="$store.tombola.vincitori.length > 0">
+      <template x-for="v in $store.tombola.vincitoriRecenti" :key="v.at + v.fasciaId">
+        <div class="vincitore">
+          <span class="fascia-nome" x-text="($store.tombola.fasce.find(f => f.id === v.fasciaId)?.nome) ?? v.fasciaId"></span>
+          <span class="chi" x-text="v.nome || '—'"></span>
+        </div>
+      </template>
+    </aside>
+  </main>
+</body>
+</html>

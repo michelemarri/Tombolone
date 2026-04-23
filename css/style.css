@@ -1,0 +1,1147 @@
+/* ============================================================
+   TOMBOLONE — Editorial Italian Warmth
+   Palette: carta crema, inchiostro, terracotta, vino, ocra.
+   Typography: Fraunces (display variabile) + Newsreader (body).
+   ============================================================ */
+
+/* --- Reset essenziale --- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+button, input, textarea, select { font: inherit; color: inherit; }
+ol, ul { list-style: none; padding: 0; margin: 0; }
+
+/* --- Variabili --- */
+:root {
+  --paper:        #f2ebdc;
+  --paper-deep:   #e5dcc8;
+  --paper-shade:  #ebe2ce;
+  --paper-soft:   #f7f1e5;
+
+  --ink:          #231f1c;
+  --ink-soft:     #54493f;
+  --ink-whisper:  rgba(35, 31, 28, 0.12);
+
+  --terracotta:       #c44b1b;
+  --terracotta-deep:  #8a2f12;
+  --ochre:            #c78b34;
+  --gold:             #a77c2e;
+  --wine:             #6b1219;
+
+  --font-display: 'Fraunces', 'Iowan Old Style', 'Hoefler Text', Georgia, serif;
+  --font-body:    'Newsreader', 'Iowan Old Style', 'Hoefler Text', Georgia, serif;
+
+  --shadow-pallina:   inset 0 -3px 6px rgba(35, 31, 28, 0.08),
+                      inset 0 2px 3px rgba(255, 255, 255, 0.5),
+                      0 1px 2px rgba(35, 31, 28, 0.06);
+  --shadow-extracted: 0 6px 20px rgba(107, 18, 25, 0.35),
+                      inset 0 -3px 6px rgba(107, 18, 25, 0.25),
+                      inset 0 2px 3px rgba(255, 255, 255, 0.1);
+  --shadow-card:      0 2px 12px rgba(35, 31, 28, 0.06);
+  --shadow-deep:      0 20px 60px rgba(35, 31, 28, 0.25);
+}
+
+/* --- Body --- */
+html { font-size: 16px; }
+body {
+  min-height: 100vh;
+  background: var(--paper);
+  background-image:
+    radial-gradient(ellipse at 15% 0%, rgba(196, 75, 27, 0.045), transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(107, 18, 25, 0.035), transparent 60%);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-variation-settings: "opsz" 16;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  padding-top: 6px;
+}
+
+/* --- Strip decorativa in alto --- */
+.strip {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 6px; z-index: 100;
+  display: flex;
+  pointer-events: none;
+}
+.strip span { flex: 1; }
+.strip span:nth-child(1) { background: var(--ink-soft); }
+.strip span:nth-child(2) { background: var(--ochre); }
+.strip span:nth-child(3) { background: var(--terracotta); }
+
+/* --- Tipografia base --- */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  margin: 0;
+  line-height: 1.1;
+  font-weight: 500;
+}
+h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-variation-settings: "opsz" 144;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+  color: var(--ink);
+}
+h2 {
+  font-size: 0.95rem;
+  font-variation-settings: "opsz" 24;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+em { font-style: italic; }
+kbd {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 12;
+  font-weight: 600;
+  background: var(--paper-shade);
+  padding: 0.05em 0.4em;
+  border-radius: 2px;
+  font-size: 0.85em;
+  border: 1px solid var(--ink-whisper);
+  border-bottom-width: 2px;
+}
+
+/* --- Bottoni --- */
+button {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-variation-settings: "opsz" 20;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  padding: 0.65rem 1.1rem;
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s, transform .1s;
+  white-space: nowrap;
+}
+button:hover { background: var(--terracotta); border-color: var(--terracotta); }
+button:active { transform: translateY(1px); }
+button.secondario { background: transparent; color: var(--ink); }
+button.secondario:hover { background: var(--ink); color: var(--paper); }
+button.pericolo { background: transparent; color: var(--wine); border-color: var(--wine); }
+button.pericolo:hover { background: var(--wine); color: var(--paper); }
+button.primario.big {
+  padding: 1.15rem 2.5rem;
+  font-size: 1rem;
+  margin-top: 1.25rem;
+  min-width: 260px;
+  align-self: flex-start;
+  letter-spacing: 0.12em;
+}
+button.testuale {
+  background: none; color: var(--terracotta); border: none; padding: 0.25rem 0.5rem;
+  text-transform: none; letter-spacing: 0.02em; font-weight: 500; font-size: 0.85rem;
+}
+button.testuale:hover { background: transparent; color: var(--wine); text-decoration: underline; }
+
+/* --- Focus --- */
+*:focus-visible { outline: 3px solid var(--terracotta); outline-offset: 2px; border-radius: 2px; }
+
+/* --- Input base --- */
+input[type="text"], input[type="number"], textarea {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--ink);
+  background: var(--paper-soft);
+  color: var(--ink);
+  border-radius: 0;
+}
+input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+  outline: none; border-color: var(--terracotta); background: #fff;
+}
+textarea { resize: vertical; min-height: 5rem; }
+
+/* --- Alpine --- */
+[x-cloak] { display: none !important; }
+
+/* ============================================================
+   SETUP
+   ============================================================ */
+.setup {
+  max-width: 720px;
+  margin: 1.5rem auto 5rem;
+  padding: 0.5rem 3.5rem 3.5rem;
+}
+.setup h1 { margin-bottom: 0.75rem; }
+.setup .sottotitolo {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 1.3rem;
+  margin: 0 0 4rem;
+}
+.setup form { display: flex; flex-direction: column; gap: 2.5rem; }
+
+.campo { display: flex; flex-direction: column; gap: 0.65rem; }
+.etichetta {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.etichetta em { font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--ink-soft); }
+
+.setup fieldset {
+  border: 1px solid var(--ink-whisper);
+  padding: 1.75rem 2.25rem 2.25rem;
+  margin: 0;
+}
+.setup legend {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.82rem;
+  padding: 0 0.75rem;
+  color: var(--ink);
+}
+.setup .hint {
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  margin: 0.35rem 0 1.75rem;
+  font-family: var(--font-body);
+}
+
+#fasce-setup-list { display: flex; flex-direction: column; gap: 0.1rem; margin-bottom: 1.5rem; }
+.fascia-setup-row {
+  display: grid;
+  grid-template-columns: auto 1fr 4.75rem auto;
+  gap: 1.25rem;
+  align-items: center;
+  padding: 1rem 0.5rem;
+  border-bottom: 1px dashed var(--ink-whisper);
+}
+.fascia-setup-row:last-child { border-bottom: none; }
+.fascia-setup-row input[type="text"] {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+  padding: 0.55rem 0.7rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+}
+.fascia-setup-row input[type="text"]:focus { border-bottom-color: var(--terracotta); background: transparent; }
+.fascia-setup-row input[type="number"] {
+  font-size: 1.1rem;
+  padding: 0.6rem 0.35rem;
+  text-align: center;
+  background: transparent;
+  border: 1px solid var(--ink-whisper);
+}
+.fascia-setup-row .rimuovi {
+  background: transparent;
+  color: var(--wine);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.88rem;
+  border: none;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+.fascia-setup-row .rimuovi:hover { background: var(--wine); color: var(--paper); }
+
+.checkbox {
+  display: flex; align-items: center; gap: 0.85rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  font-size: 1.05rem;
+  padding: 0.5rem 0;
+}
+.checkbox input[type="checkbox"] { width: 1.2rem; height: 1.2rem; accent-color: var(--terracotta); }
+
+/* ============================================================
+   GAME LAYOUT
+   ============================================================ */
+.gioco {
+  display: grid;
+  grid-template-columns: minmax(280px, 320px) 1fr minmax(300px, 360px);
+  grid-template-rows: auto 1fr;
+  gap: 1.75rem;
+  padding: 2rem 2.5rem 2.5rem;
+  min-height: 100vh;
+}
+.barra {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 2rem;
+  padding-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--ink-whisper);
+}
+.barra .titolo { display: flex; align-items: baseline; gap: 1rem; min-width: 0; }
+.barra .brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.6rem;
+  font-variation-settings: "opsz" 36;
+  letter-spacing: -0.02em;
+}
+.barra .nome-partita {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 1.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.barra .contatore {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-variation-settings: "opsz" 36;
+  color: var(--ink-soft);
+  text-align: center;
+  font-weight: 500;
+}
+.barra .contatore #contatore-estratti { color: var(--terracotta); font-weight: 700; }
+.barra .contatore .totale { font-weight: 400; opacity: 0.6; }
+.barra .azioni { display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap; }
+
+.sidebar-left  { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; gap: 1.75rem; min-width: 0; }
+.tabellone-wrap { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
+.sidebar-right { grid-column: 3; grid-row: 2; display: flex; flex-direction: column; gap: 1.75rem; min-width: 0; }
+
+/* --- Input estrazione --- */
+.input-estrazione {
+  background: var(--paper-soft);
+  border: 1px solid var(--ink-whisper);
+  padding: 1rem 1rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.input-estrazione label {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+.input-estrazione .input-group { display: grid; grid-template-columns: 1fr auto; gap: 0.4rem; }
+.input-estrazione input[type="number"] {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-variation-settings: "opsz" 60;
+  text-align: center;
+  padding: 0.3rem 0.5rem;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  line-height: 1;
+  -moz-appearance: textfield;
+}
+.input-estrazione input[type="number"]::-webkit-outer-spin-button,
+.input-estrazione input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.input-estrazione .hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  font-family: var(--font-body);
+}
+
+/* --- Storico ultimi --- */
+.storico header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.5rem; margin-bottom: 0.5rem;
+}
+.ultimi {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(2.8rem, 1fr));
+  gap: 0.4rem;
+}
+.ultimi li {
+  background: var(--paper-shade);
+  padding: 0.4rem;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: "opsz" 24;
+  font-size: 1.1rem;
+  border-radius: 2px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.ultimi li:first-child { background: var(--wine); color: var(--paper); }
+.ultimi li.empty {
+  grid-column: 1 / -1;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.9rem;
+  aspect-ratio: auto;
+  padding: 0.5rem 0;
+  text-align: left;
+}
+
+/* ============================================================
+   TABELLONE
+   ============================================================ */
+.tabellone {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.tabellone-blocco {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.tabellone-riga {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) 1.75rem repeat(5, 1fr);
+  gap: 0.65rem;
+}
+.tabellone-riga .separatore { visibility: hidden; }
+.pallina.separatore {
+  background: transparent;
+  box-shadow: none;
+  visibility: hidden;
+  pointer-events: none;
+  cursor: default;
+}
+
+.pallina {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--paper-deep);
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: "opsz" 48;
+  font-size: clamp(0.95rem, 1.6vw, 1.6rem);
+  box-shadow: var(--shadow-pallina);
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  transition: background .4s cubic-bezier(.4,0,.2,1), color .3s, transform .15s, box-shadow .4s;
+  user-select: none;
+  line-height: 1;
+}
+.pallina:hover:not(.estratta) {
+  background: var(--paper-shade);
+  transform: translateY(-2px);
+}
+.pallina.estratta {
+  background: var(--terracotta);
+  color: var(--paper-soft);
+  box-shadow: var(--shadow-extracted);
+  cursor: default;
+}
+.pallina.appena-estratta {
+  background: var(--wine);
+  color: var(--paper-soft);
+  animation: stamp .7s cubic-bezier(.4,0,.2,1);
+  z-index: 2;
+}
+@keyframes stamp {
+  0%   { transform: scale(1) rotate(0); }
+  20%  { transform: scale(1.35) rotate(-6deg); }
+  50%  { transform: scale(1.2)  rotate(4deg); }
+  80%  { transform: scale(1.1)  rotate(-1deg); }
+  100% { transform: scale(1)    rotate(0); }
+}
+
+/* ============================================================
+   REVEAL (numero XXL)
+   ============================================================ */
+.reveal {
+  position: relative;
+  min-height: 22vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+}
+.reveal .placeholder {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 1.1rem;
+}
+.reveal .numero {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "opsz" 144;
+  font-size: clamp(6rem, 18vh, 13rem);
+  color: var(--wine);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+.reveal .decina {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+  letter-spacing: 0.05em;
+}
+.reveal .smorfia {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-variation-settings: "opsz" 36;
+  color: var(--terracotta);
+  font-size: clamp(1.2rem, 2.4vh, 1.9rem);
+  font-weight: 400;
+  margin-top: 0.5rem;
+}
+.reveal.animate .numero  { animation: reveal-in 1s cubic-bezier(.34,1.56,.64,1); }
+.reveal.animate .smorfia { animation: smorfia-in 1.2s .3s both cubic-bezier(.4,0,.2,1); }
+.reveal.animate .decina  { animation: fade-in .8s .5s both ease; }
+@keyframes reveal-in {
+  0%   { opacity: 0; transform: scale(.1)  rotate(-16deg); filter: blur(8px); }
+  55%  { opacity: 1; transform: scale(1.15) rotate(4deg);  filter: blur(0); }
+  80%  { transform: scale(.96) rotate(-1deg); }
+  100% { transform: scale(1)   rotate(0); }
+}
+@keyframes smorfia-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fade-in    { from { opacity: 0; } to { opacity: 1; } }
+
+/* ============================================================
+   FASCE (right panel)
+   ============================================================ */
+.fasce ul { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem; }
+.fascia {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.7rem 0.9rem;
+  background: var(--paper-soft);
+  border: 1px solid var(--ink-whisper);
+  border-left: 3px solid var(--ochre);
+}
+.fascia .nome {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  font-variation-settings: "opsz" 24;
+  line-height: 1.15;
+}
+.fascia .sub { font-size: 0.8rem; color: var(--ink-soft); font-style: italic; margin-top: 0.1rem; }
+.fascia.vinta { border-left-color: var(--gold); background: rgba(167, 124, 46, 0.08); }
+.fascia.vinta .stato {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--gold);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.fascia button { padding: 0.35rem 0.7rem; font-size: 0.7rem; }
+.fasce li.empty {
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-style: italic;
+  border: none;
+  padding: 0.25rem 0;
+}
+
+/* --- Vincitori --- */
+.vincitori ul { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem; }
+.vincitori li.empty {
+  font-style: italic;
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  padding: 0.25rem 0;
+}
+.vincitore {
+  padding: 0.85rem 1rem;
+  background: var(--paper-soft);
+  border-left: 3px solid var(--gold);
+  position: relative;
+}
+.vincitore .fascia-nome {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--wine);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  font-variation-settings: "opsz" 14;
+}
+.vincitore .chi {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-style: italic;
+  font-variation-settings: "opsz" 36;
+  font-weight: 500;
+  margin: 0.2rem 0 0.3rem;
+  color: var(--ink);
+  line-height: 1.15;
+}
+.vincitore .numeri {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 18;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   PRESENTATION MODE (stesso schermo, fullscreen-ish)
+   ============================================================ */
+body.presentazione {
+  background: #1a1613;
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(196, 75, 27, 0.12), transparent 60%);
+  color: var(--paper);
+}
+body.presentazione .strip { height: 3px; opacity: 0.8; }
+body.presentazione .gioco {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto 1fr;
+  padding: 1.5rem 3rem 2rem;
+  gap: 1.25rem;
+}
+body.presentazione .barra {
+  border-bottom-color: rgba(242, 235, 220, 0.12);
+  padding-bottom: 0.5rem;
+}
+body.presentazione .barra .azioni button:not([data-action="presentazione"]) { display: none; }
+body.presentazione .barra .brand { color: var(--ochre); }
+body.presentazione .barra .nome-partita { color: rgba(242, 235, 220, 0.7); }
+body.presentazione .barra .contatore { color: rgba(242, 235, 220, 0.4); }
+body.presentazione .barra .contatore #contatore-estratti { color: var(--terracotta); }
+body.presentazione .sidebar-left,
+body.presentazione .sidebar-right { display: none; }
+body.presentazione .tabellone-wrap { grid-column: 1; grid-row: 2 / -1; }
+body.presentazione .reveal { min-height: 32vh; }
+body.presentazione .reveal .numero { font-size: clamp(9rem, 34vh, 20rem); color: var(--terracotta); }
+body.presentazione .reveal .smorfia { color: var(--ochre); font-size: clamp(1.4rem, 3.5vh, 2.4rem); }
+body.presentazione .reveal .decina  { color: rgba(242, 235, 220, 0.5); font-size: 1.1rem; }
+body.presentazione .reveal .placeholder { color: rgba(242, 235, 220, 0.5); font-size: 1.2rem; }
+body.presentazione .pallina {
+  background: #2a2420;
+  color: rgba(242, 235, 220, 0.3);
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,255,255,0.04);
+  cursor: pointer;
+}
+body.presentazione .pallina:hover:not(.estratta) { background: #352d28; color: var(--paper); transform: none; }
+body.presentazione .pallina.estratta {
+  background: var(--terracotta); color: var(--paper);
+  box-shadow: 0 4px 16px rgba(196, 75, 27, 0.4);
+}
+body.presentazione .pallina.appena-estratta {
+  background: var(--paper); color: var(--wine);
+  box-shadow: 0 6px 24px rgba(242, 235, 220, 0.3);
+}
+
+/* --- Typing overlay (presentazione) --- */
+.typing-overlay {
+  position: fixed;
+  right: 2rem;
+  bottom: 2rem;
+  padding: 0.8rem 1.3rem;
+  background: var(--paper);
+  color: var(--wine);
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  font-weight: 700;
+  font-variation-settings: "opsz" 72;
+  border: 2px solid var(--wine);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  z-index: 200;
+  letter-spacing: 0.1em;
+  min-width: 3.8rem;
+  text-align: center;
+  line-height: 1;
+}
+body.presentazione .typing-overlay { background: var(--wine); color: var(--paper); border-color: var(--paper); }
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+dialog.modal {
+  border: none;
+  padding: 0;
+  background: var(--paper-soft);
+  max-width: 580px;
+  width: calc(100% - 2rem);
+  border-radius: 2px;
+  box-shadow: var(--shadow-deep);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+dialog.modal::backdrop {
+  background: rgba(35, 31, 28, 0.55);
+  backdrop-filter: blur(6px);
+}
+.modal-content { display: flex; flex-direction: column; }
+.modal-header { padding: 1.5rem 1.75rem 0.75rem; border-bottom: 1px solid var(--ink-whisper); }
+.modal-header h2 {
+  font-size: 1.75rem;
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  font-variation-settings: "opsz" 48;
+}
+.modal-body { padding: 1.25rem 1.75rem; display: flex; flex-direction: column; gap: 1rem; }
+.modal-body label {
+  display: flex; flex-direction: column; gap: 0.4rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.modal-body .hint {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  margin: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+}
+.modal-body .numeri-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+}
+.modal-body .numeri-grid input {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 0.45rem 0.2rem;
+  -moz-appearance: textfield;
+  width: 100%;
+}
+.modal-body .numeri-grid input::-webkit-outer-spin-button,
+.modal-body .numeri-grid input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.modal-footer {
+  padding: 1rem 1.75rem 1.5rem;
+  display: flex; gap: 0.6rem; justify-content: flex-end;
+  border-top: 1px solid var(--ink-whisper);
+}
+/* Slider (range input) nel modal impostazioni */
+.slider-wrap {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+.slider-wrap input[type="range"] {
+  width: 100%;
+  accent-color: var(--terracotta);
+  height: 1.5rem;
+}
+.slider-wrap .slider-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "opsz" 36;
+  font-size: 1.4rem;
+  color: var(--wine);
+  min-width: 3.5rem;
+  text-align: right;
+  font-feature-settings: "tnum";
+}
+
+.errore, .risultato {
+  padding: 0.75rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  border-left: 3px solid;
+}
+.errore, .risultato.ko { background: rgba(107, 18, 25, 0.08); color: var(--wine); border-color: var(--wine); }
+.risultato.ok { background: rgba(167, 124, 46, 0.1); color: var(--gold); border-color: var(--gold); }
+
+/* ============================================================
+   TOASTS
+   ============================================================ */
+.toasts {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+.toast {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-variation-settings: "opsz" 18;
+  box-shadow: var(--shadow-deep);
+  animation: toast-in .3s ease, toast-out .3s 2.2s ease forwards;
+  max-width: 440px;
+  border-left: 3px solid var(--terracotta);
+}
+@keyframes toast-in  { from { opacity: 0; transform: translateY(20px);  } to { opacity: 1; transform: translateY(0); } }
+@keyframes toast-out { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
+
+/* ============================================================
+   DISPLAY PAGE (display.html) — responsive 16:9, no scroll
+   Font pallinas scalano con container queries (cqmin) così sono
+   proporzionate allo spazio reale del tabellone, non alla viewport.
+   ============================================================ */
+body.solo-display {
+  background: #1a1613;
+  background-image: radial-gradient(ellipse at 50% 0%, rgba(196, 75, 27, 0.12), transparent 60%);
+  color: var(--paper);
+  height: 100vh;
+  overflow: hidden;
+  padding: 0;
+}
+body.solo-display .strip { height: 0.5vmin; }
+
+.display-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2.1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 2vmin 3vmin;
+  padding: 2.5vmin 3vmin 2vmin;
+  height: 100vh;
+  overflow: hidden;
+  align-items: stretch;
+}
+
+/* ---- Colonna sinistra: reveal + storico, centrati ---- */
+.display-sinistra {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3vmin;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  container-type: size;
+  text-align: center;
+}
+.display-sinistra .reveal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 100%;
+}
+.display-sinistra .reveal .placeholder {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: rgba(242, 235, 220, 0.55);
+  font-size: 3.5cqmin;
+}
+.display-sinistra .reveal .numero {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "opsz" 144;
+  /* Grande quasi quanto la colonna — min() tra % altezza e % larghezza
+     così non sfora mai in nessuna direzione */
+  font-size: min(85cqh, 95cqw);
+  color: var(--paper);
+  line-height: 0.82;
+  letter-spacing: -0.05em;
+}
+.display-sinistra .reveal .decina {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: rgba(242, 235, 220, 0.55);
+  font-size: 3cqmin;
+  letter-spacing: 0.05em;
+  margin-top: 1cqmin;
+}
+.display-sinistra .reveal .smorfia {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--ochre);
+  font-size: 7cqmin;
+  font-weight: 500;
+  font-variation-settings: "opsz" 48;
+  margin-top: 1cqmin;
+  line-height: 1.15;
+}
+
+/* Storico chiamati (prima dell'attuale) */
+.display-precedenti {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2cqmin;
+  padding-top: 2cqmin;
+  border-top: 1px solid rgba(242, 235, 220, 0.15);
+  width: 100%;
+  max-width: 90%;
+}
+.display-precedenti .precedenti-titolo {
+  font-family: var(--font-display);
+  font-size: 2.2cqmin;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(242, 235, 220, 0.5);
+  font-weight: 600;
+  text-align: center;
+}
+.display-precedenti .precedenti-lista {
+  display: flex;
+  gap: 1cqmin;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.display-precedenti li {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: "opsz" 36;
+  font-size: 4.5cqmin;
+  color: rgba(242, 235, 220, 0.85);
+  background: rgba(242, 235, 220, 0.08);
+  padding: 0.55cqmin 1.5cqmin;
+  border-radius: 0.5cqmin;
+  min-width: 7cqmin;
+  text-align: center;
+  line-height: 1;
+}
+
+/* ---- Colonna destra: tabellone ---- */
+.display-tabellone {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  min-width: 0;
+  /* Niente overflow: hidden — il glow delle pallinas appena-estratte
+     deve poter uscire dal box senza essere tagliato. La tabellone è
+     già constrained a 100% × 100% del container, quindi non c'è rischio
+     di overflow strutturale, solo visivo dei box-shadow. */
+  /* container-type va sul parent perché size-containment
+     impedirebbe ai children di dare dimensioni alla tabellone */
+  container-type: size;
+}
+.display-tabellone .tabellone {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5cqh;
+  width: 100%;
+  height: 100%;
+}
+.display-tabellone .tabellone-blocco {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7cqh;
+  flex: 1;
+  min-height: 0;
+}
+.display-tabellone .tabellone-riga {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) 1.5cqw repeat(5, minmax(0, 1fr));
+  gap: 0.7cqw;
+  flex: 1;
+  min-height: 0;
+}
+.display-tabellone .pallina {
+  /* height primario (riga-bound), width da aspect-ratio.
+     max-width clampa se la pallina sarebbe più larga della colonna.
+     → dimensione finale = min(row_height, col_width). Zero overlap. */
+  aspect-ratio: 1;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  max-height: 100%;
+  align-self: center;
+  justify-self: center;
+  background: #2f2824;
+  color: rgba(242, 235, 220, 0.7);
+  box-shadow:
+    inset 0 -0.3cqmin 0.6cqmin rgba(0,0,0,0.4),
+    inset 0 0.15cqmin 0.3cqmin rgba(255,255,255,0.06);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "opsz" 60;
+  /* Scala con container reale del display-tabellone */
+  font-size: 4.5cqmin;
+  line-height: 1;
+  border: none;
+  padding: 0;
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
+  transition: background .5s cubic-bezier(.4,0,.2,1), color .3s, box-shadow .5s;
+}
+.display-tabellone .pallina.estratta {
+  background: var(--terracotta);
+  color: var(--paper);
+  box-shadow: 0 0 2vmin rgba(196, 75, 27, 0.5);
+}
+.display-tabellone .pallina.appena-estratta {
+  background: var(--paper);
+  color: var(--wine);
+  box-shadow: 0 0 3vmin rgba(242, 235, 220, 0.45);
+}
+.display-tabellone .pallina.separatore {
+  background: transparent;
+  visibility: hidden;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* ---- Vincitori bar (sotto, full width, orizzontale scrollabile) ---- */
+.display-vincitori {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  gap: 1.5vmin;
+  overflow-x: auto;
+  padding: 1.5vmin 0 0.5vmin;
+  border-top: 1px solid rgba(242, 235, 220, 0.15);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  align-items: stretch;
+}
+.display-vincitori::-webkit-scrollbar { display: none; }
+.display-vincitori .vincitore {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3vmin;
+  background: rgba(242, 235, 220, 0.05);
+  border-left: 0.3vmin solid var(--gold);
+  padding: 1vmin 1.5vmin;
+  flex-shrink: 0;
+  min-width: 20vmin;
+}
+.display-vincitori .vincitore .fascia-nome {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--ochre);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 1.45vmin;
+  font-variation-settings: "opsz" 14;
+}
+.display-vincitori .vincitore .chi {
+  font-family: var(--font-display);
+  font-size: 2.4vmin;
+  font-style: italic;
+  color: var(--paper);
+  font-variation-settings: "opsz" 36;
+  line-height: 1.15;
+}
+
+/* ============================================================
+   CEREMONY — overlay che compare quando esce un nuovo numero
+   Fase 1 (0-25%)   : pop-in scale + rotate al centro
+   Fase 2 (25-70%)  : hold grande e fermo
+   Fase 3 (70-100%) : trasla verso sinistra + scale down + fade
+   Durata totale: 2.4s (sincronizzata col setTimeout in display.js)
+   ============================================================ */
+.ceremony {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: rgba(26, 22, 19, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: ceremony-backdrop var(--ceremony-duration, 4500ms) ease-in-out forwards;
+}
+.ceremony-num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "opsz" 144;
+  font-size: 62vmin;
+  color: var(--paper);
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+  animation: ceremony-numero var(--ceremony-duration, 4500ms) cubic-bezier(.34, 1.5, .6, 1) forwards;
+  will-change: transform, opacity;
+}
+@keyframes ceremony-backdrop {
+  0%   { opacity: 0; }
+  8%   { opacity: 1; }
+  72%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes ceremony-numero {
+  0%   { transform: scale(0.1) rotate(-18deg); opacity: 0; filter: blur(16px); }
+  15%  { transform: scale(1.18) rotate(6deg); opacity: 1; filter: blur(0); }
+  25%  { transform: scale(1) rotate(0); }
+  70%  { transform: scale(1) translate(0, 0); opacity: 1; }
+  100% { transform: translate(-34vw, 0) scale(0.3); opacity: 0; }
+}
+
+/* Waiting state (display prima dell'inizio partita) */
+.display-waiting {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3vmin;
+  text-align: center;
+}
+.display-waiting h1 {
+  font-size: clamp(4rem, 14vmin, 12rem);
+  color: var(--ochre);
+  font-variation-settings: "opsz" 144;
+  margin-bottom: 1.5vmin;
+}
+.display-waiting p {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: rgba(242, 235, 220, 0.65);
+  font-size: clamp(1rem, 2.5vmin, 2rem);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1200px) {
+  .gioco { grid-template-columns: 240px 1fr 280px; }
+}
+@media (max-width: 960px) {
+  .gioco {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+  }
+  .sidebar-left, .tabellone-wrap, .sidebar-right { grid-column: 1; grid-row: auto; }
+  .barra { grid-template-columns: 1fr; text-align: center; }
+  .barra .titolo { justify-content: center; }
+  .barra .azioni { justify-content: center; }
+}

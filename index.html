@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tombolone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="js/smorfia.js"></script>
+  <script defer src="js/store.js"></script>
+  <script defer src="js/app.js"></script>
+  <script defer src="js/alpine.min.js"></script>
+</head>
+<body x-data>
+  <div class="strip" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  <!-- ===== SETUP ===== -->
+  <section class="setup" x-show="!$store.tombola.setup.completed" x-data="setupForm" x-cloak>
+    <h1>Tombolone</h1>
+    <p class="sottotitolo">Il companion per la tombola in famiglia.</p>
+    <form @submit.prevent="conferma()" novalidate>
+      <label class="campo">
+        <span class="etichetta">Nome della partita <em>(opzionale)</em></span>
+        <input type="text" x-model="nomePartita" placeholder="Natale 2026, pomeriggio" autocomplete="off">
+      </label>
+
+      <fieldset class="fasce-setup">
+        <legend>Fasce in gioco</legend>
+        <p class="hint">Disattiva le fasce che non chiamerete. Puoi rinominarle o aggiungerne di custom.</p>
+        <div id="fasce-setup-list">
+          <template x-for="(f, i) in fasce" :key="f.id">
+            <div class="fascia-setup-row">
+              <input type="checkbox" x-model="f.attiva" :aria-label="'Attiva ' + f.nome">
+              <input type="text" x-model="f.nome" aria-label="Nome fascia" maxlength="40">
+              <input type="number" x-model.number="f.numeri" min="1" max="15" aria-label="Quanti numeri per questa fascia">
+              <button type="button" class="rimuovi" @click="rimuovi(i)" title="Rimuovi">Rimuovi</button>
+            </div>
+          </template>
+        </div>
+        <button type="button" class="secondario" @click="aggiungi()">+ Aggiungi fascia</button>
+      </fieldset>
+
+      <label class="checkbox">
+        <input type="checkbox" x-model="smorfia">
+        <span>Mostra la smorfia napoletana ad ogni estrazione</span>
+      </label>
+
+      <button type="submit" class="primario big">Inizia partita</button>
+    </form>
+  </section>
+
+  <!-- ===== GIOCO ===== -->
+  <main class="gioco" x-show="$store.tombola.setup.completed" x-data="gameView" x-cloak>
+    <header class="barra">
+      <div class="titolo">
+        <span class="brand">Tombolone</span>
+        <span class="nome-partita" x-text="$store.tombola.nomePartita"></span>
+      </div>
+      <div class="contatore" aria-label="Numeri estratti">
+        <span x-text="$store.tombola.totaleEstratti"></span><span class="totale">/90</span>
+      </div>
+      <nav class="azioni">
+        <button type="button" class="secondario" @click="$dispatch('apri-verifica')">Verifica cartella</button>
+        <button type="button" class="secondario" @click="$dispatch('apri-impostazioni')">Impostazioni</button>
+        <button type="button" class="secondario" @click="apriDisplay()">Apri display</button>
+        <button type="button" class="secondario" @click="togglePresentazione()">Presentazione</button>
+        <button type="button" class="pericolo" @click="nuovaPartita()">Nuova partita</button>
+      </nav>
+    </header>
+
+    <aside class="sidebar-left">
+      <form class="input-estrazione" @submit.prevent="estrai()">
+        <label for="input-numero">Numero estratto</label>
+        <div class="input-group">
+          <input type="number" inputmode="numeric" min="1" max="90"
+                 id="input-numero" x-ref="inputNumero"
+                 x-model.number="inputNumero" autocomplete="off">
+          <button type="submit">Segna</button>
+        </div>
+        <p class="hint">Digita e premi <kbd>Invio</kbd>, oppure clicca la pallina.</p>
+      </form>
+
+      <section class="storico">
+        <header>
+          <h2>Ultimi estratti</h2>
+          <button type="button" class="testuale" @click="$store.tombola.undo()">↶ Annulla ultimo</button>
+        </header>
+        <ol class="ultimi">
+          <template x-if="$store.tombola.estratti.length === 0">
+            <li class="empty">Nessun numero ancora.</li>
+          </template>
+          <template x-for="n in $store.tombola.ultimiVisibili" :key="n">
+            <li x-text="n"></li>
+          </template>
+        </ol>
+      </section>
+    </aside>
+
+    <section class="tabellone-wrap">
+      <div class="reveal" :class="{animate: animateReveal}" aria-live="polite">
+        <div class="placeholder" x-show="!$store.tombola.ultimo">In attesa della prima estrazione…</div>
+        <div class="numero" x-show="$store.tombola.ultimo" x-text="$store.tombola.ultimo"></div>
+        <div class="decina" x-show="$store.tombola.ultimo" x-text="$store.tombola.decinaLabel($store.tombola.ultimo)"></div>
+        <div class="smorfia"
+             x-show="$store.tombola.ultimo && $store.tombola.setup.smorfia"
+             x-text="$store.tombola.smorfia[$store.tombola.ultimo] ?? ''"></div>
+      </div>
+
+      <div class="tabellone">
+        <template x-for="(righe, bi) in $store.tombola.tabelloneBlocchi" :key="bi">
+          <div class="tabellone-blocco">
+            <template x-for="(riga, ri) in righe" :key="ri">
+              <div class="tabellone-riga">
+                <template x-for="(n, ci) in riga" :key="ci">
+                  <button type="button" class="pallina"
+                          :class="{
+                            separatore: n === null,
+                            estratta: n !== null && $store.tombola.estratti.includes(n),
+                            'appena-estratta': n !== null && $store.tombola.ultimo === n
+                          }"
+                          :disabled="n === null"
+                          :aria-hidden="n === null"
+                          :aria-label="n !== null ? 'Numero ' + n : null"
+                          @click="n !== null && estraiNum(n)"
+                          x-text="n ?? ''"></button>
+                </template>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
+    </section>
+
+    <aside class="sidebar-right">
+      <section class="fasce">
+        <h2>Fasce</h2>
+        <ul>
+          <template x-if="$store.tombola.fasceAttive.length === 0">
+            <li class="empty">Nessuna fascia attiva.</li>
+          </template>
+          <template x-for="f in $store.tombola.fasceAttive" :key="f.id">
+            <li :class="{ fascia: true, vinta: f.vinta }">
+              <div>
+                <div class="nome" x-text="f.nome"></div>
+                <div class="sub" x-text="f.numeri + ' numeri'"></div>
+              </div>
+              <template x-if="f.vinta">
+                <span class="stato">fatta</span>
+              </template>
+              <template x-if="!f.vinta">
+                <button type="button" @click="$dispatch('apri-vincitore', { fasciaId: f.id })">Dichiara</button>
+              </template>
+            </li>
+          </template>
+        </ul>
+      </section>
+
+      <section class="vincitori">
+        <h2>Vincitori</h2>
+        <ul>
+          <template x-if="$store.tombola.vincitori.length === 0">
+            <li class="empty">Ancora nessuno.</li>
+          </template>
+          <template x-for="v in $store.tombola.vincitoriRecenti" :key="v.at + v.fasciaId">
+            <li class="vincitore">
+              <div class="fascia-nome" x-text="($store.tombola.fasce.find(f => f.id === v.fasciaId)?.nome) ?? v.fasciaId"></div>
+              <div class="chi" x-text="v.nome || '—'"></div>
+              <template x-if="v.numeri?.length">
+                <div class="numeri" x-text="v.numeri.join(' · ')"></div>
+              </template>
+            </li>
+          </template>
+        </ul>
+      </section>
+    </aside>
+
+    <div class="typing-overlay" x-show="typingBuffer" x-text="typingBuffer" aria-hidden="true" x-cloak></div>
+  </main>
+
+  <!-- ===== MODAL: DICHIARA VINCITORE ===== -->
+  <dialog class="modal" x-data="modalVincitore" @close="chiudi()">
+    <template x-if="fascia">
+      <form class="modal-content" @submit.prevent="submit()" novalidate>
+        <div class="modal-header">
+          <h2 x-text="fascia.nome + ' — chi ha vinto?'"></h2>
+        </div>
+        <div class="modal-body">
+          <label>Nome del vincitore
+            <input type="text" x-model="nome" x-ref="nomeInput" placeholder="Anna da Castello" required>
+          </label>
+          <label>Numeri della cartella
+            <p class="hint">Opzionale: inseriscili per verificare che siano tutti usciti.</p>
+            <div class="numeri-grid">
+              <template x-for="i in Array.from({length: fascia.numeri}, (_, k) => k)" :key="i">
+                <input type="number" inputmode="numeric" min="1" max="90" class="num-input"
+                       x-model="numeri[i]" @input="avanzaCampo(i)" :placeholder="i + 1">
+              </template>
+            </div>
+          </label>
+          <div class="errore" x-show="errore" x-text="errore"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="secondario" @click="chiudi()">Annulla</button>
+          <button type="submit">Registra vittoria</button>
+        </div>
+      </form>
+    </template>
+  </dialog>
+
+  <!-- ===== MODAL: IMPOSTAZIONI ===== -->
+  <dialog class="modal" x-data="modalImpostazioni" @close="chiudi()">
+    <form class="modal-content" @submit.prevent="salva()">
+      <div class="modal-header"><h2>Impostazioni</h2></div>
+      <div class="modal-body">
+        <label class="checkbox">
+          <input type="checkbox" x-model="smorfia">
+          <span>Mostra la smorfia napoletana ad ogni estrazione</span>
+        </label>
+        <label>Durata cerimonia estrazione
+          <p class="hint">Quanto dura l'animazione del numero gigante sul display pubblico.</p>
+          <div class="slider-wrap">
+            <input type="range" x-model.number="durataCerimonia" min="1500" max="30000" step="500">
+            <span class="slider-value" x-text="(durataCerimonia/1000).toFixed(1) + 's'"></span>
+          </div>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="secondario" @click="chiudi()">Annulla</button>
+        <button type="submit">Salva</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ===== MODAL: VERIFICA CARTELLA ===== -->
+  <dialog class="modal" x-data="modalVerifica" @close="chiudi()">
+    <form class="modal-content" @submit.prevent="submit()">
+      <div class="modal-header"><h2>Verifica cartella</h2></div>
+      <div class="modal-body">
+        <label>Numeri della cartella
+          <p class="hint">Separali con spazi, virgole o a capo. Non è necessario siano in ordine.</p>
+          <textarea x-model="raw" x-ref="textarea" rows="3" placeholder="12 45 67 23 89" required></textarea>
+        </label>
+        <div :class="risultato?.ok ? 'risultato ok' : 'risultato ko'"
+             x-show="risultato" x-text="risultato?.msg"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="secondario" @click="chiudi()">Chiudi</button>
+        <button type="submit">Verifica</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ===== TOASTS ===== -->
+  <div class="toasts" x-data="toasts" aria-live="polite">
+    <template x-for="t in items" :key="t.id">
+      <div class="toast" x-text="t.msg"></div>
+    </template>
+  </div>
+</body>
+</html>
