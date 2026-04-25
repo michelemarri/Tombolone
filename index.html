@@ -85,7 +85,8 @@
       <section class="storico">
         <header>
           <h2>Ultimi estratti</h2>
-          <button type="button" class="testuale" @click="$store.tombola.undo()">↶ Annulla ultimo</button>
+          <button type="button" class="testuale" @click="$store.tombola.undo()"
+                  :disabled="$store.tombola.estratti.length === 0">↶ Annulla ultimo</button>
         </header>
         <ol class="ultimi">
           <template x-if="$store.tombola.estratti.length === 0">

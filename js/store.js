@@ -85,7 +85,11 @@ document.addEventListener('alpine:init', () => {
 
     // ---------- Init: persist + sync ----------
     init() {
-      // Effect reattivo: riscrive localStorage e broadcasta ad ogni mutazione
+      // Effect reattivo: riscrive localStorage e broadcasta ad ogni mutazione.
+      // Quando applyRemote sta applicando uno stato in arrivo (suppressSync=true)
+      // saltiamo TUTTO: lo stato è già autoritativo nel mittente, e riscrivere
+      // localStorage qui ritriggererebbe lo `storage` event nelle altre tab,
+      // generando un eco di sync inutili.
       Alpine.effect(() => {
         const snapshot = {
           version: this.version,
@@ -100,8 +104,9 @@ document.addEventListener('alpine:init', () => {
           estratti: [...this.estratti],
           vincitori: this.vincitori.map(v => ({ ...v, numeri: [...(v.numeri ?? [])] })),
         };
+        if (suppressSync) return;
         try { localStorage.setItem(STATE_KEY, JSON.stringify(snapshot)); } catch {}
-        if (channel && !suppressSync) {
+        if (channel) {
           channel.postMessage({ type: 'sync', state: snapshot, at: Date.now() });
         }
       });

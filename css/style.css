@@ -306,7 +306,6 @@ textarea { resize: vertical; min-height: 5rem; }
   text-align: center;
   font-weight: 500;
 }
-.barra .contatore #contatore-estratti { color: var(--terracotta); font-weight: 700; }
 .barra .contatore .totale { font-weight: 400; opacity: 0.6; }
 .barra .azioni { display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap; }
 
@@ -410,7 +409,6 @@ textarea { resize: vertical; min-height: 5rem; }
   grid-template-columns: repeat(5, 1fr) 1.75rem repeat(5, 1fr);
   gap: 0.65rem;
 }
-.tabellone-riga .separatore { visibility: hidden; }
 .pallina.separatore {
   background: transparent;
   box-shadow: none;
@@ -621,11 +619,10 @@ body.presentazione .barra {
   border-bottom-color: rgba(242, 235, 220, 0.12);
   padding-bottom: 0.5rem;
 }
-body.presentazione .barra .azioni button:not([data-action="presentazione"]) { display: none; }
+body.presentazione .barra .azioni { display: none; }
 body.presentazione .barra .brand { color: var(--ochre); }
 body.presentazione .barra .nome-partita { color: rgba(242, 235, 220, 0.7); }
 body.presentazione .barra .contatore { color: rgba(242, 235, 220, 0.4); }
-body.presentazione .barra .contatore #contatore-estratti { color: var(--terracotta); }
 body.presentazione .sidebar-left,
 body.presentazione .sidebar-right { display: none; }
 body.presentazione .tabellone-wrap { grid-column: 1; grid-row: 2 / -1; }
