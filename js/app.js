@@ -111,6 +111,38 @@ document.addEventListener('alpine:init', () => {
       }
     },
 
+    // Click sulla pallina: se il numero è già uscito chiede conferma e lo
+    // annulla, altrimenti lo estrae. Permette di correggere un click sbagliato.
+    toccaPallina(n) {
+      if (this.$store.tombola.estratti.includes(n)) {
+        if (confirm(`Annullare il numero ${n}?\n\nVerrà rimosso dagli estratti.`)) {
+          this.$store.tombola.rimuoviEstratto(n);
+          this.$dispatch('toast', { msg: `Numero ${n} annullato.` });
+        }
+        return;
+      }
+      this.estraiNum(n);
+    },
+
+    // Annulla una vincita dichiarata per errore, con conferma.
+    rimuoviVincitore(v) {
+      const fascia = this.$store.tombola.fasce.find(f => f.id === v.fasciaId);
+      const etichetta = fascia?.nome ?? v.fasciaId;
+      const chi = v.nome ? ` di ${v.nome}` : '';
+      if (confirm(`Annullare la vincita "${etichetta}"${chi}?`)) {
+        this.$store.tombola.rimuoviVincitore({ at: v.at, fasciaId: v.fasciaId });
+        this.$dispatch('toast', { msg: `Vincita "${etichetta}" annullata.` });
+      }
+    },
+
+    // Riapre una fascia "fatta": rimuove le sue vincite e la rende di nuovo dichiarabile.
+    annullaFascia(f) {
+      if (confirm(`Annullare la vincita della fascia "${f.nome}"?\n\nLa fascia tornerà dichiarabile.`)) {
+        this.$store.tombola.annullaFascia(f.id);
+        this.$dispatch('toast', { msg: `Fascia "${f.nome}" riaperta.` });
+      }
+    },
+
     nuovaPartita() {
       if (confirm('Iniziare una nuova partita?\n\nGli estratti, i vincitori e le fasce custom verranno cancellati.')) {
         this.$store.tombola.reset();
@@ -258,6 +290,8 @@ document.addEventListener('alpine:init', () => {
   Alpine.data('modalImpostazioni', () => ({
     smorfia: false,
     durataCerimonia: 4500,
+    mostraPrecedenti: false,
+    mostraVincitori: false,
 
     init() {
       window.addEventListener('apri-impostazioni', () => this.apri());
@@ -266,6 +300,8 @@ document.addEventListener('alpine:init', () => {
     apri() {
       this.smorfia = !!this.$store.tombola.setup.smorfia;
       this.durataCerimonia = this.$store.tombola.setup.durataCerimonia ?? 4500;
+      this.mostraPrecedenti = !!this.$store.tombola.setup.mostraPrecedenti;
+      this.mostraVincitori = !!this.$store.tombola.setup.mostraVincitori;
       this.$root.showModal();
     },
 
@@ -277,6 +313,8 @@ document.addEventListener('alpine:init', () => {
       this.$store.tombola.aggiornaImpostazioni({
         smorfia: this.smorfia,
         durataCerimonia: this.durataCerimonia,
+        mostraPrecedenti: this.mostraPrecedenti,
+        mostraVincitori: this.mostraVincitori,
       });
       this.chiudi();
     },

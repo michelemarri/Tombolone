@@ -39,7 +39,8 @@
              x-text="$store.tombola.smorfia[$store.tombola.ultimo] ?? ''"></div>
       </div>
 
-      <div class="display-precedenti" x-show="$store.tombola.estratti.length > 1">
+      <div class="display-precedenti"
+           x-show="$store.tombola.setup.mostraPrecedenti && $store.tombola.estratti.length > 1">
         <div class="precedenti-titolo">Chiamati prima</div>
         <ol class="precedenti-lista">
           <template x-for="n in $store.tombola.estratti.slice(0, -1).slice(-10).reverse()" :key="n">
@@ -73,7 +74,7 @@
     </section>
 
     <!-- Barra vincitori (sotto, larga, scorrevole) -->
-    <aside class="display-vincitori" x-show="$store.tombola.vincitori.length > 0">
+    <aside class="display-vincitori" x-show="$store.tombola.setup.mostraVincitori && $store.tombola.vincitori.length > 0">
       <template x-for="v in $store.tombola.vincitoriRecenti" :key="v.at + v.fasciaId">
         <div class="vincitore">
           <span class="fascia-nome" x-text="($store.tombola.fasce.find(f => f.id === v.fasciaId)?.nome) ?? v.fasciaId"></span>

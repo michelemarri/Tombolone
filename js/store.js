@@ -39,7 +39,7 @@ function initialState() {
     version: 1,
     createdAt: null,
     nomePartita: '',
-    setup: { completed: false, smorfia: false, durataCerimonia: 4500 },
+    setup: { completed: false, smorfia: false, durataCerimonia: 4500, mostraPrecedenti: false, mostraVincitori: false },
     fasce: structuredClone(FASCE_DEFAULT),
     estratti: [],
     vincitori: [],
@@ -99,6 +99,8 @@ document.addEventListener('alpine:init', () => {
             completed: this.setup.completed,
             smorfia: this.setup.smorfia,
             durataCerimonia: this.setup.durataCerimonia,
+            mostraPrecedenti: this.setup.mostraPrecedenti,
+            mostraVincitori: this.setup.mostraVincitori,
           },
           fasce: this.fasce.map(f => ({ ...f })),
           estratti: [...this.estratti],
@@ -133,6 +135,8 @@ document.addEventListener('alpine:init', () => {
       this.setup.completed = next.setup.completed;
       this.setup.smorfia = next.setup.smorfia;
       this.setup.durataCerimonia = next.setup.durataCerimonia ?? 4500;
+      this.setup.mostraPrecedenti = next.setup.mostraPrecedenti ?? false;
+      this.setup.mostraVincitori = next.setup.mostraVincitori ?? false;
       this.fasce = next.fasce.map(f => ({ ...f }));
       this.estratti = [...next.estratti];
       this.vincitori = next.vincitori.map(v => ({ ...v, numeri: [...(v.numeri ?? [])] }));
@@ -156,6 +160,14 @@ document.addEventListener('alpine:init', () => {
       this.estratti.pop();
     },
 
+    // Rimuove un numero specifico (non solo l'ultimo): serve a correggere un
+    // click sbagliato sul tabellone. Non tocca fasce/vincitori già dichiarati.
+    rimuoviEstratto(n) {
+      n = Number(n);
+      const i = this.estratti.indexOf(n);
+      if (i !== -1) this.estratti.splice(i, 1);
+    },
+
     reset() {
       const fresh = initialState();
       this.version = fresh.version;
@@ -164,6 +176,8 @@ document.addEventListener('alpine:init', () => {
       this.setup.completed = fresh.setup.completed;
       this.setup.smorfia = fresh.setup.smorfia;
       this.setup.durataCerimonia = fresh.setup.durataCerimonia;
+      this.setup.mostraPrecedenti = fresh.setup.mostraPrecedenti;
+      this.setup.mostraVincitori = fresh.setup.mostraVincitori;
       this.fasce = fresh.fasce;
       this.estratti = fresh.estratti;
       this.vincitori = fresh.vincitori;
@@ -180,11 +194,13 @@ document.addEventListener('alpine:init', () => {
       this.createdAt = new Date().toISOString();
     },
 
-    aggiornaImpostazioni({ smorfia, durataCerimonia }) {
+    aggiornaImpostazioni({ smorfia, durataCerimonia, mostraPrecedenti, mostraVincitori }) {
       if (smorfia != null) this.setup.smorfia = !!smorfia;
       if (durataCerimonia != null) {
         this.setup.durataCerimonia = Math.max(1000, Math.min(30000, Number(durataCerimonia) || 4500));
       }
+      if (mostraPrecedenti != null) this.setup.mostraPrecedenti = !!mostraPrecedenti;
+      if (mostraVincitori != null) this.setup.mostraVincitori = !!mostraVincitori;
     },
 
     dichiaraVincitore({ fasciaId, nome, numeri }) {
@@ -196,6 +212,23 @@ document.addEventListener('alpine:init', () => {
         numeri: Array.isArray(numeri) ? [...numeri] : [],
         at: new Date().toISOString(),
       });
+    },
+
+    // Annulla una vincita dichiarata per errore. `vinta` della fascia viene
+    // ricalcolato dalla lista vincitori (fonte di verità): la fascia si riapre
+    // solo se non restano altre vincite a suo carico.
+    rimuoviVincitore({ at, fasciaId }) {
+      this.vincitori = this.vincitori.filter(v => !(v.at === at && v.fasciaId === fasciaId));
+      const fascia = this.fasce.find(f => f.id === fasciaId);
+      if (fascia) fascia.vinta = this.vincitori.some(v => v.fasciaId === fasciaId);
+    },
+
+    // Riapre una fascia dichiarata vinta: rimuove tutte le sue vincite dalla
+    // lista vincitori e azzera il flag. `vincitori` resta la fonte di verità.
+    annullaFascia(fasciaId) {
+      this.vincitori = this.vincitori.filter(v => v.fasciaId !== fasciaId);
+      const fascia = this.fasce.find(f => f.id === fasciaId);
+      if (fascia) fascia.vinta = false;
     },
 
     verificaCartella(numeri) {

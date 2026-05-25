@@ -19,11 +19,10 @@
   <!-- ===== SETUP ===== -->
   <section class="setup" x-show="!$store.tombola.setup.completed" x-data="setupForm" x-cloak>
     <h1>Tombolone</h1>
-    <p class="sottotitolo">Il companion per la tombola in famiglia.</p>
     <form @submit.prevent="conferma()" novalidate>
       <label class="campo">
         <span class="etichetta">Nome della partita <em>(opzionale)</em></span>
-        <input type="text" x-model="nomePartita" placeholder="Natale 2026, pomeriggio" autocomplete="off">
+        <input type="text" x-model="nomePartita" placeholder="Sagra di Pentecoste 2026" autocomplete="off">
       </label>
 
       <fieldset class="fasce-setup">
@@ -124,7 +123,8 @@
                           :disabled="n === null"
                           :aria-hidden="n === null"
                           :aria-label="n !== null ? 'Numero ' + n : null"
-                          @click="n !== null && estraiNum(n)"
+                          :title="n !== null && $store.tombola.estratti.includes(n) ? 'Tocca per annullare' : null"
+                          @click="n !== null && toccaPallina(n)"
                           x-text="n ?? ''"></button>
                 </template>
               </div>
@@ -148,7 +148,10 @@
                 <div class="sub" x-text="f.numeri + ' numeri'"></div>
               </div>
               <template x-if="f.vinta">
-                <span class="stato">fatta</span>
+                <button type="button" class="stato annulla-fascia"
+                        :aria-label="'Annulla vincita ' + f.nome"
+                        title="Annulla vincita"
+                        @click="annullaFascia(f)">fatta&nbsp;✕</button>
               </template>
               <template x-if="!f.vinta">
                 <button type="button" @click="$dispatch('apri-vincitore', { fasciaId: f.id })">Dichiara</button>
@@ -171,6 +174,10 @@
               <template x-if="v.numeri?.length">
                 <div class="numeri" x-text="v.numeri.join(' · ')"></div>
               </template>
+              <button type="button" class="rimuovi-vincitore"
+                      :aria-label="'Annulla vincita ' + (($store.tombola.fasce.find(f => f.id === v.fasciaId)?.nome) ?? v.fasciaId)"
+                      title="Annulla vincita"
+                      @click="rimuoviVincitore(v)">×</button>
             </li>
           </template>
         </ul>
@@ -218,6 +225,14 @@
         <label class="checkbox">
           <input type="checkbox" x-model="smorfia">
           <span>Mostra la smorfia napoletana ad ogni estrazione</span>
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" x-model="mostraPrecedenti">
+          <span>Mostra i numeri chiamati prima sul display pubblico</span>
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" x-model="mostraVincitori">
+          <span>Mostra i vincitori sul display pubblico</span>
         </label>
         <label>Durata cerimonia estrazione
           <p class="hint">Quanto dura l'animazione del numero gigante sul display pubblico.</p>
