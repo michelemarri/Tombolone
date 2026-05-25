@@ -311,19 +311,30 @@ un fraintendimento o un caso d'uso nuovo che cambia i vincoli §2.
 
 ---
 
-## 11. Stato attuale (snapshot 2026-04-25)
+## 11. Stato attuale (snapshot 2026-05-25)
 
 - ✅ Setup partita con fasce configurabili (Ambo, Terno disabilitato di
   default, Quaterna, Cinquina, Tombola, + custom).
 - ✅ Estrazione via click pallina o tastiera (digit + Invio).
+- ✅ Annullamento di un numero estratto toccando la pallina già uscita sul
+  tabellone (con conferma) — azione store `rimuoviEstratto`, dispatcher UI
+  `toccaPallina`. Sicuro per le animazioni: reveal/cerimonia scattano solo
+  quando `estratti.length` aumenta.
 - ✅ Reveal animato banditore.
 - ✅ Smorfia napoletana opzionale (1–90).
 - ✅ Display pubblico (`display.html`) read-only, responsive 16:9.
+- ✅ Toggle (Impostazioni) per mostrare/nascondere sul **solo display pubblico**
+  i "Chiamati prima" (`mostraPrecedenti`) e la barra vincitori
+  (`mostraVincitori`). Default OFF; il banditore vede sempre tutto. Nessuna
+  migration: campi assenti → `undefined` → OFF.
 - ✅ Sync cross-window: BroadcastChannel + storage event fallback.
 - ✅ Persistenza localStorage (`tombolone:state:v1`).
 - ✅ Modal vincitore con OTP-style verifica numeri cartella.
+- ✅ Annullamento vincite: × nella card vincitore (`rimuoviVincitore`) e badge
+  "fatta" cliccabile nella lista fasce (`annullaFascia`, riapre la fascia).
+  `vincitori` è la fonte di verità, `fascia.vinta` è derivato/ricalcolato.
 - ✅ Modal verifica cartella standalone.
-- ✅ Modal impostazioni (smorfia toggle + durata cerimonia 1.5s–30s).
+- ✅ Modal impostazioni (smorfia + durata cerimonia 1.5s–30s + toggle display).
 - ✅ Modalità presentazione (`P` per toggle, sfondo scuro, controlli nascosti).
 - ✅ Cerimonia di estrazione: numero XXL al centro che trasla a sinistra,
   durata configurabile.
