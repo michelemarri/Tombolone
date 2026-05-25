@@ -61,11 +61,19 @@
         <span x-text="$store.tombola.totaleEstratti"></span><span class="totale">/90</span>
       </div>
       <nav class="azioni">
-        <button type="button" class="secondario" @click="$dispatch('apri-verifica')">Verifica cartella</button>
-        <button type="button" class="secondario" @click="$dispatch('apri-impostazioni')">Impostazioni</button>
         <button type="button" class="secondario" @click="apriDisplay()">Apri display</button>
-        <button type="button" class="secondario" @click="togglePresentazione()">Presentazione</button>
-        <button type="button" class="pericolo" @click="nuovaPartita()">Nuova partita</button>
+        <div class="menu-kebab" x-data="{ open: false }"
+             @click.outside="open = false" @keydown.escape.window="open = false">
+          <button type="button" class="secondario kebab-toggle"
+                  :aria-expanded="open" aria-haspopup="true" aria-label="Altre azioni"
+                  @click="open = !open">⋮</button>
+          <div class="kebab-menu" x-show="open" x-cloak x-transition.opacity>
+            <button type="button" @click="open = false; $dispatch('apri-verifica')">Verifica cartella</button>
+            <button type="button" @click="open = false; $dispatch('apri-impostazioni')">Impostazioni</button>
+            <button type="button" @click="open = false; togglePresentazione()">Presentazione</button>
+            <button type="button" class="voce-pericolo" @click="open = false; nuovaPartita()">Nuova partita</button>
+          </div>
+        </div>
       </nav>
     </header>
 

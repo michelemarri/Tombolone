@@ -300,7 +300,37 @@ textarea { resize: vertical; min-height: 5rem; }
   font-weight: 500;
 }
 .barra .contatore .totale { font-weight: 400; opacity: 0.6; }
-.barra .azioni { display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap; }
+.barra .azioni { display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap; align-items: center; }
+
+/* Menu kebab: raccoglie le azioni meno frequenti per tenere l'header su una riga. */
+.menu-kebab { position: relative; }
+.kebab-toggle { padding: 0.55rem 0.7rem; font-size: 1.25rem; line-height: 1; }
+.kebab-menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 220px;
+  padding: 0.4rem;
+  background: var(--paper);
+  border: 1px solid var(--ink-whisper);
+  border-radius: 4px;
+  box-shadow: 0 12px 30px rgba(35, 31, 28, 0.18);
+}
+.kebab-menu button {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: var(--ink);
+  border-color: transparent;
+  border-radius: 2px;
+}
+.kebab-menu button:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.kebab-menu button.voce-pericolo { color: var(--wine); }
+.kebab-menu button.voce-pericolo:hover { background: var(--wine); color: var(--paper); border-color: var(--wine); }
 
 .sidebar-left  { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; gap: 1.75rem; min-width: 0; }
 .tabellone-wrap { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
