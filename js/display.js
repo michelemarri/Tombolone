@@ -16,6 +16,16 @@ document.addEventListener('alpine:init', () => {
         if (n > prev) this.onNuovaEstrazione();
         prev = n;
       });
+
+      // Il <title> è fuori dall'albero Alpine: lo aggiorno a mano, sia
+      // all'avvio sia quando il banditore cambia nome partita a display aperto.
+      this.aggiornaTitolo();
+      this.$watch('$store.tombola.nomePartita', () => this.aggiornaTitolo());
+    },
+
+    aggiornaTitolo() {
+      const nome = (this.$store.tombola.nomePartita ?? '').trim();
+      document.title = nome ? nome + ' — Tombolone' : 'Tombolone — Display';
     },
 
     onNuovaEstrazione() {

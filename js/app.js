@@ -85,6 +85,15 @@ document.addEventListener('alpine:init', () => {
         if (completed) this.$nextTick(() => this.$refs.inputNumero?.focus());
       });
       window.addEventListener('keydown', (e) => this.onKey(e));
+
+      // Il <title> è fuori dall'albero Alpine: lo aggiorno a mano.
+      this.aggiornaTitolo();
+      this.$watch('$store.tombola.nomePartita', () => this.aggiornaTitolo());
+    },
+
+    aggiornaTitolo() {
+      const nome = (this.$store.tombola.nomePartita ?? '').trim();
+      document.title = nome ? nome + ' — Tombolone' : 'Tombolone';
     },
 
     triggerReveal() {
